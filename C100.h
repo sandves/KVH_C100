@@ -42,6 +42,10 @@
 #include <stdbool.h>
 /* ---------------------------------------------------------------------------*/
 
+/* C100 actions --------------------------------------------------------------*/
+#define C100_ACTION_ZAP           "zap"
+/* ---------------------------------------------------------------------------*/
+
 /* C100 response commands ----------------------------------------------------*/
 #define C100_SUCCESS_RESPONSE	    '>'
 #define C100_NMEA_HEADING_START   ',' 
@@ -64,7 +68,7 @@ typedef struct
                                            This parameter can be a value of @ref C100_MessageRate */
 } C100_InitTypeDef;
 
-// Support for the XY message format will be added later.
+/* Support for the XY message format will be added later. */
 typedef enum {
   MSG_NMEA,
   MSG_KVH} MessageType;

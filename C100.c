@@ -257,6 +257,14 @@ bool C100_SetBaudRate(USART_TypeDef* USARTx, char* C100_BaudRate)
 
   C100_SendCommand(USARTx, C100_BaudRate);
 
+  /* The new baud rate will not be implemented until the C100
+     is reset with the zap command. */
+  C100_SendCommand(USARTx, C100_ACTION_ZAP);
+
+  /* After the C100 has finished its warm boot, it will be operating
+     on the specified baud rate, hence we need to set the same baud
+     rate for the STM32's onboard USART to be able to communicate with
+     the compass. */
   if(C100_BaudRate == C100_BaudRate_48)
     USARTx->BRR = 24000000/4800;
   else if(C100_BaudRate == C100_BaudRate_96)
@@ -345,7 +353,7 @@ uint16_t C100_ATOUI16(char* NumberString)
      int res = 0;
      int i = 0; 
 
-     // Iterate through all digits and update the result
+     /* Iterate through all digits and update the result */
      for (; NumberString[i] != '\0'; ++i)
          res = res*10 + NumberString[i] - '0';
 
