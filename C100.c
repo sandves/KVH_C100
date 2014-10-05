@@ -157,7 +157,7 @@ uint16_t C100_ReadHeading(USART_TypeDef* USARTx, MessageType type)
 	}
 
 	// Convert ASCII heading to an integer
-	hdg = atoi(atoi_buffer);
+	hdg = C100_ATOUI16(atoi_buffer);
 
 	// Extract the last 16 bits from the heading
 	hdg = hdg & 0xffff;
@@ -330,4 +330,26 @@ uint8_t USART_ReadChar(USART_TypeDef* USARTx)
 	while(USART_GetFlagStatus(USARTx, USART_FLAG_RXNE) == RESET);
 	return USART_ReceiveData(USARTx) & 0xff;
 }
+
+/**
+  * @brief  Take an ASCII representation of an unsigned number 
+  *         and convert it to a 16 bit unsigned integer.
+  * @param  NumberString: The ASCII string to be converted
+  *         to an integer. The number is converted to uint16_t,
+  *         hence the value cannot be greater than 65535 (0xFFFF)
+  *         or smaller than zero (0x0000).
+  * @retval The integer representation of the specified number.
+  */
+uint16_t C100_ATOUI16(char* NumberString)
+ {
+     int res = 0;  // Initialize result
+     int i = 0;  // Initialize index of first digit
+
+     // Iterate through all digits and update the result
+     for (; NumberString[i] != '\0'; ++i)
+         res = res*10 + NumberString[i] - '0';
+
+     // Return result with sign
+     return res & 0xffff;
+ }
 

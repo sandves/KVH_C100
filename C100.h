@@ -134,5 +134,7 @@ uint8_t USART_ReadChar(USART_TypeDef* USARTx);
 bool C100_SetMessageRate(USART_TypeDef* USARTx, char* C100_MessageRate);
 bool C100_SetMessageType(USART_TypeDef* USARTx, char* C100_Message_Type);
 bool C100_SetBaudRate(USART_TypeDef* USARTx, char* C100_BaudRate);
+bool C100_ResponseSuccess(USART_TypeDef* USARTx);
+uint16_t C100_ATOUI16(char* NumberString);
 
 #endif
