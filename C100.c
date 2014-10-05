@@ -37,7 +37,6 @@
  /* Includes ------------------------------------------------------------------*/
 #include "C100.h"
 #include <string.h>
-#include <stdbool.h>
 
 /**
   * @brief  Fills each C100_InitStruct member with its default value.
@@ -206,7 +205,8 @@ char* C100_ReadMessage(USART_TypeDef* USARTx)
   * @param  C100_MessageRate: Specifies the message rate.
   *         This parameter can be any of the following values:
   *         C100_MessageRate_6, C100_MessageRate_60, C100_MessageRate_600.
-  * @retval None
+  * @retval Whether or not the previous command sent to the 
+  *         compass was a success.
   */
 bool C100_SetMessageRate(USART_TypeDef* USARTx, char* C100_MessageRate)
 {
@@ -214,8 +214,7 @@ bool C100_SetMessageRate(USART_TypeDef* USARTx, char* C100_MessageRate)
 
   C100_SendCommand(USARTx, C100_MessageRate);
 
-  uint8_t response = C100_ReadChar(USARTx);
-  return response == C100_SUCCESS_RESPONSE);
+  return C100_ResponseSuccess(USARTx);
 }
 
 /**
@@ -228,7 +227,8 @@ bool C100_SetMessageRate(USART_TypeDef* USARTx, char* C100_MessageRate)
   *         This parameter can be any of the following values:
   *         C100_MessageType_NMEA, C100_MessageRate_KVH, 
   *         C100_MessageRate_XY_CORRECTED, C100_MessageRate_XY_UNCORRECTED.
-  * @retval None
+  * @retval Whether or not the previous command sent to the 
+  *         compass was a success.
   */
 bool C100_SetMessageType(USART_TypeDef* USARTx, char* C100_Message_Type)
 {
@@ -236,8 +236,7 @@ bool C100_SetMessageType(USART_TypeDef* USARTx, char* C100_Message_Type)
 
   C100_SendCommand(USARTx, C100_Message_Type);
 
-  uint8_t response = C100_ReadChar(USARTx);
-  return response == C100_SUCCESS_RESPONSE);
+  return C100_ResponseSuccess(USARTx);
 }
 
 /**
@@ -249,7 +248,8 @@ bool C100_SetMessageType(USART_TypeDef* USARTx, char* C100_Message_Type)
   * @param  C100_MessageRate: Specifies the message rate.
   *         This parameter can be any of the following values:
   *         C100_BaudRate_48, C100_BaudRate_96.
-  * @retval None
+  * @retval Whether or not the previous command sent to the 
+  *         compass was a success.
   */
 bool C100_SetBaudRate(USART_TypeDef* USARTx, char* C100_BaudRate)
 {
@@ -257,6 +257,25 @@ bool C100_SetBaudRate(USART_TypeDef* USARTx, char* C100_BaudRate)
 
   C100_SendCommand(USARTx, C100_BaudRate);
 
+  if(C100_BaudRate == C100_BaudRate_48)
+    USARTx->BRR = 24000000/4800;
+  else if(C100_BaudRate == C100_BaudRate_96)
+    USARTx->BRR = 24000000/9600;
+
+  return C100_ResponseSuccess(USARTx);
+}
+
+/**
+  * @brief  Read the compass command response and determine
+  *         if the newly issued command was a success. 
+  * @param  USARTx: Select the USART or the UART peripheral. 
+  *       This parameter can be one of the following values:
+  *       USART1, USART2, USART3, UART4 or UART5.
+  * @retval Whether or not the previous command sent to the 
+  *         compass was a success.
+  */
+bool C100_ResponseSuccess(USART_TypeDef* USARTx)
+{
   uint8_t response = C100_ReadChar(USARTx);
   return response == C100_SUCCESS_RESPONSE);
 }
