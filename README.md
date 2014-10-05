@@ -1,4 +1,4 @@
-KVH_C100
+KVH C100 Compass Engine
 ========
 
-STM32VlDiscovery library for the C100 subsea compass from KVH Industries.
+STM32VlDiscovery library for the C100 electronic subsea compass from KVH Industries.
