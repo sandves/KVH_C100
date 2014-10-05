@@ -277,7 +277,7 @@ bool C100_SetBaudRate(USART_TypeDef* USARTx, char* C100_BaudRate)
 bool C100_ResponseSuccess(USART_TypeDef* USARTx)
 {
   uint8_t response = C100_ReadChar(USARTx);
-  return response == C100_SUCCESS_RESPONSE);
+  return response == C100_SUCCESS_RESPONSE;
 }
 
 /**
@@ -343,7 +343,7 @@ uint8_t USART_ReadChar(USART_TypeDef* USARTx)
 uint16_t C100_ATOUI16(char* NumberString)
  {
      int res = 0;
-     int i = 0;
+     int i = 0; 
 
      // Iterate through all digits and update the result
      for (; NumberString[i] != '\0'; ++i)
