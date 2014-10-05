@@ -342,14 +342,13 @@ uint8_t USART_ReadChar(USART_TypeDef* USARTx)
   */
 uint16_t C100_ATOUI16(char* NumberString)
  {
-     int res = 0;  // Initialize result
-     int i = 0;  // Initialize index of first digit
+     int res = 0;
+     int i = 0;
 
      // Iterate through all digits and update the result
      for (; NumberString[i] != '\0'; ++i)
          res = res*10 + NumberString[i] - '0';
 
-     // Return result with sign
      return res & 0xffff;
  }
 
