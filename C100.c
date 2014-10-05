@@ -67,10 +67,10 @@ void C100_StructInit(C100_InitTypeDef* C100_InitStruct)
   */
 void C100_Init(USART_TypeDef* USARTx, C100_InitTypeDef* C100_InitStruct)
 {
-	assert_param(IS_USART_ALL_PERIPH(USARTx));
-	assert_param(IS_C100_BAUD_RATE(C100_InitStruct->C100_BaudRate));  
-  	assert_param(IS_C100_MESSAGE_TYPE(C100_InitStruct->C100_MessageType));
-  	assert_param(IS_USART_MESSAGE_RATE(C100_InitStruct->C100_MessageRate));
+	  assert_param(IS_USART_ALL_PERIPH(USARTx));
+	  assert_param(IS_C100_BAUD_RATE(C100_InitStruct->C100_BaudRate));  
+    assert_param(IS_C100_MESSAGE_TYPE(C100_InitStruct->C100_MessageType));
+    assert_param(IS_C100_MESSAGE_RATE(C100_InitStruct->C100_MessageRate));
 
   	C100_USART_Init(USARTx, C100_InitStruct->C100_BaudRate);
 
@@ -115,7 +115,7 @@ void C100_USART_Init(USART_TypeDef* USARTx, uint32_t baudrate)
   * @retval An integer representation of the current heading reported by
   *			the compass.
   */
-uint16_t C100_ReadHeading(USART_TypeDef* USARTx)
+uint16_t C100_ReadHeading(USART_TypeDef* USARTx, MessageType type)
 {
 	assert_param(IS_USART_ALL_PERIPH(USARTx));
 
@@ -123,11 +123,26 @@ uint16_t C100_ReadHeading(USART_TypeDef* USARTx)
 	int hdg_idx = 0;
 	char hdgBuffer* = C100_ReadMessage(USARTx);
 	char atoi_buffer[3];
+  char hdg_start;
+
+  // The function does not support the XY message type yet
+  switch(type)
+  {
+    case(MessageType.NMEA):
+      hdg_start = C100_NMEA_HEADING_START;
+      break;
+    case(MessageType.KVH):
+      hdg_start = C100_KVH_HEADING_START;
+      break;
+    default:
+      hdg_start = C100_NMEA_HEADING_START;
+      break;
+  }
 	
 	// Locate the index of heading start
 	for(idx = 0; idx < strlen(hdg_buffer); idx++)
 	{
-		if(hdg_buffer[idx] == C100_HEADING_START)
+		if(hdg_buffer[idx] == C100_KVH_HEADING_START)
 		{
 			hdg_idx = idx + 1;
 			break;
@@ -180,6 +195,70 @@ char* C100_ReadMessage(USART_TypeDef* USARTx)
 	}
 
 	return rec_buffer;
+}
+
+/**
+  * @brief  Configure the C100 compass to use the specified message
+  *         rate.
+  * @param  USARTx: Select the USART or the UART peripheral. 
+  *       This parameter can be one of the following values:
+  *       USART1, USART2, USART3, UART4 or UART5.
+  * @param  C100_MessageRate: Specifies the message rate.
+  *         This parameter can be any of the following values:
+  *         C100_MessageRate_6, C100_MessageRate_60, C100_MessageRate_600.
+  * @retval None
+  */
+bool C100_SetMessageRate(USART_TypeDef* USARTx, char* C100_MessageRate)
+{
+  assert_param(IS_C100_MESSAGE_RATE(C100_MessageRate));
+
+  C100_SendCommand(USARTx, C100_MessageRate);
+
+  uint8_t response = C100_ReadChar(USARTx);
+  return response == C100_SUCCESS_RESPONSE);
+}
+
+/**
+  * @brief  Configure the C100 compass to use the specified message
+  *         type.
+  * @param  USARTx: Select the USART or the UART peripheral. 
+  *       This parameter can be one of the following values:
+  *       USART1, USART2, USART3, UART4 or UART5.
+  * @param  C100_MessageRate: Specifies the message rate.
+  *         This parameter can be any of the following values:
+  *         C100_MessageType_NMEA, C100_MessageRate_KVH, 
+  *         C100_MessageRate_XY_CORRECTED, C100_MessageRate_XY_UNCORRECTED.
+  * @retval None
+  */
+bool C100_SetMessageType(USART_TypeDef* USARTx, char* C100_Message_Type)
+{
+  assert_param(IS_C100_MESSAGE_TYPE(C100_Message_Type));
+
+  C100_SendCommand(USARTx, C100_Message_Type);
+
+  uint8_t response = C100_ReadChar(USARTx);
+  return response == C100_SUCCESS_RESPONSE);
+}
+
+/**
+  * @brief  Configure the C100 compass to use the specified baud
+  *         rate.
+  * @param  USARTx: Select the USART or the UART peripheral. 
+  *       This parameter can be one of the following values:
+  *       USART1, USART2, USART3, UART4 or UART5.
+  * @param  C100_MessageRate: Specifies the message rate.
+  *         This parameter can be any of the following values:
+  *         C100_BaudRate_48, C100_BaudRate_96.
+  * @retval None
+  */
+bool C100_SetBaudRate(USART_TypeDef* USARTx, char* C100_BaudRate)
+{
+  assert_param(IS_C100_BAUD_RATE(C100_BaudRate));
+
+  C100_SendCommand(USARTx, C100_BaudRate);
+
+  uint8_t response = C100_ReadChar(USARTx);
+  return response == C100_SUCCESS_RESPONSE);
 }
 
 /**

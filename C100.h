@@ -39,25 +39,15 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include <stm32f10x_usart.h>
-/* ---------------------------------------------------------------------------*/
-
-/* C100 user commands --------------------------------------------------------*/
-#define C100_CMD_MESSAGE_RATE_6 				"=r,6\r"
-#define C100_CMD_MESSAGE_RATE_60 				"=r,60\r"
-#define C100_CMD_MESSAGE_RATE_600				"=r,600\r"
-#define C100_CMD_MESSAGE_TYPE_NMEA				"=t,0\r"
-#define C100_CMD_MESSAGE_TYPE_KVH				"=t,1\r"
-#define C100_CMD_MESSAGE_TYPE_XY_CORRECTED		"=t,2\r"
-#define C100_CMD_MESSAGE_TYPE_XY_UNCORRECTED	"=t,3\r"
-#define C100_CMD_BAUD_RATE_96					"=b,96\r"
-#define C100_CMD_BAUD_RATE_48					"=b,48\r"
+#include <stdbool.h>
 /* ---------------------------------------------------------------------------*/
 
 /* C100 response commands ----------------------------------------------------*/
-#define C100_SUCCESS_RESPONSE	'>'
-#define C100_HEADING_START		'$'
-#define CARRIAGE_RETURN			0x0d
-#define LINE_FEED				0x0a
+#define C100_SUCCESS_RESPONSE	    '>'
+#define C100_NMEA_HEADING_START   ',' 
+#define C100_KVH_HEADING_START		'$'
+#define CARRIAGE_RETURN			      0x0d
+#define LINE_FEED				          0x0a
 /* ---------------------------------------------------------------------------*/
 
 typedef struct
@@ -74,12 +64,18 @@ typedef struct
                                            This parameter can be a value of @ref C100_MessageRate */
 } C100_InitTypeDef;
 
+// Support for the XY message format will be added later.
+typedef enum {
+  MSG_NMEA,
+  MSG_KVH} MessageType;
+
+
 /** @defgroup C100_BaudRate
   * @{
   */ 
   
-#define C100_BaudRate_48			C100_CMD_BAUD_RATE_48
-#define C100_BaudRate_96			C100_CMD_BAUD_RATE_96
+#define C100_BaudRate_48			"=b,48\r"
+#define C100_BaudRate_96			"=b,96\r"
 #define IS_C100_BAUD_RATE(BAUD_RATE) (((BAUD_RATE) == C100_BaudRate_48) || \
                                      ((BAUD_RATE) == C100_BaudRate_96))
 /**
@@ -90,10 +86,10 @@ typedef struct
   * @{
   */ 
   
-#define C100_MessageType_NMEA 			C100_CMD_MESSAGE_TYPE_NMEA
-#define C100_MessageType_KVH			C100_CMD_MESSAGE_TYPE_KVH
-#define C100_MessageType_XY_CORRECTED	C100_CMD_MESSAGE_TYPE_XY_CORRECTED
-#define C100_MessageType_XY_UNCORRECTED	C100_CMD_MESSAGE_TYPE_XY_UNCORRECTED
+#define C100_MessageType_NMEA 			      "=t,0\r"
+#define C100_MessageType_KVH			        "=t,1\r"
+#define C100_MessageType_XY_CORRECTED	    "=t,2\r"
+#define C100_MessageType_XY_UNCORRECTED   "=t,3\r"
 #define IS_C100_MESSAGE_TYPE(MESSAGE_TYPE) (((MESSAGE_TYPE) == C100_MessageType_NMEA) || \
                                      ((MESSAGE_TYPE) == C100_MessageType_KVH) || \
                                      ((MESSAGE_TYPE) == C100_MessageType_XY_CORRECTED) || \
@@ -106,9 +102,9 @@ typedef struct
   * @{
   */ 
   
-#define C100_MessageRate_6 			C100_CMD_MESSAGE_RATE_6
-#define C100_MessageRate_60			C100_CMD_MESSAGE_RATE_60
-#define C100_MessageRate_600		C100_CMD_MESSAGE_RATE_600
+#define C100_MessageRate_6 			"=r,6\r"
+#define C100_MessageRate_60			"=r,60\r"
+#define C100_MessageRate_600		"=r,600\r"
 #define IS_C100_MESSAGE_RATE(MESSAGE_RATE) (((MESSAGE_RATE) == C100_MessageRate_6) || \
                                      ((MESSAGE_RATE) == C100_MessageRate_60) || \
                                      ((MESSAGE_RATE) == C100_MessageRate_600))
@@ -120,15 +116,9 @@ typedef struct
   * @{
   */ 
 
-#define IS_C100_USER_COMMAND(USER_COMMAND) (((USER_COMMAND) == C100_CMD_MESSAGE_RATE_6) || \
-                                     ((USER_COMMAND) == C100_CMD_MESSAGE_RATE_60) || \
-                                     (((USER_COMMAND) == C100_CMD_MESSAGE_RATE_600) || \
-                                     ((USER_COMMAND) == C100_CMD_MESSAGE_TYPE_NMEA) || \
-                                     (((USER_COMMAND) == C100_CMD_MESSAGE_TYPE_KVH) || \
-                                     ((USER_COMMAND) == C100_CMD_MESSAGE_TYPE_XY_CORRECTED) || \
-                                     (((USER_COMMAND) == C100_CMD_MESSAGE_TYPE_XY_UNCORRECTED) || \
-                                     ((USER_COMMAND) == C100_CMD_BAUD_RATE_48) || \
-                                     ((USER_COMMAND) == C100_CMD_BAUD_RATE_96))
+#define IS_C100_USER_COMMAND(USER_COMMAND) (((IS_C100_MESSAGE_TYPE(USER_COMMAND)) || \
+                                     (((IS_C100_MESSAGE_RATE(USER_COMMAND) || \                                     
+                                     (((IS_C100_MESSAGE_BAUD_RATE(USER_COMMAND)
 /**
   * @}
   */ 
@@ -141,5 +131,8 @@ uint16_t C100_ReadHeading(USART_TypeDef* USARTx);
 void C100_SendCommand(USART_TypeDef* USARTx, char* command);
 void USART_SendChar(USART_TypeDef* USARTx, uint8_t c);
 uint8_t USART_ReadChar(USART_TypeDef* USARTx);
+bool C100_SetMessageRate(USART_TypeDef* USARTx, char* C100_MessageRate);
+bool C100_SetMessageType(USART_TypeDef* USARTx, char* C100_Message_Type);
+bool C100_SetBaudRate(USART_TypeDef* USARTx, char* C100_BaudRate);
 
 #endif
