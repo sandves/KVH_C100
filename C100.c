@@ -165,6 +165,14 @@ uint16_t C100_ReadHeading(USART_TypeDef* USARTx, MessageType type)
 	return hdg;
 }
 
+char* C100_SingleMessage(USART_TypeDef* USARTx, char* C100_MessageType)
+{
+  assert_param(IS_C100_SINGLE_MESSAGE(C100_Message_Type));
+
+  C100_SendCommand(USARTx, C100_MessageType);
+  return C100_ReadMessage(USARTx);
+}
+
 /**
   * @brief  Reads one ASCII message from the C100 compass.
   * @param  USARTx: Select the USART or the UART peripheral. 

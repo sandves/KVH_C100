@@ -127,9 +127,27 @@ typedef enum {
   * @}
   */ 
 
+/** @defgroup C100_SingleMessage
+  * @{
+  */ 
+
+#define C100_Single_NMEA             "=d0\r"
+#define C100_Single_KVH              "=d1\r"
+#define C100_Single_XY_CORRECTED     "=d2\r"
+#define C100_Single_XY_UNCORRECTED   "=d3\r"
+#define IS_C100_SINGLE_MESSAGE(MESSAGE_TYPE) (((MESSAGE_TYPE) == C100_Single_NMEA) || \
+                                     ((MESSAGE_TYPE) == C100_Single_KVH) || \
+                                     ((MESSAGE_TYPE) == C100_Single_XY_CORRECTED) || \
+                                     ((MESSAGE_TYPE) == C100_Single_XY_UNCORRECTED))
+
+/**
+  * @}
+  */ 
+
 void C100_Init(USART_TypeDef* USARTx, C100_InitTypeDef* C100_InitStruct);
 void C100_StructInit(C100_InitTypeDef* C100_InitStruct);
 void C100_USART_Init(USART_TypeDef* USARTx);
+char* C100_SingleMessage(USART_TypeDef* USARTx, char* C100_MessageType);
 char* C100_ReadMessage();
 uint16_t C100_ReadHeading(USART_TypeDef* USARTx);
 void C100_SendCommand(USART_TypeDef* USARTx, char* command);
