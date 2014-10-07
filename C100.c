@@ -74,8 +74,8 @@ void C100_Init(USART_TypeDef* USARTx, C100_InitTypeDef* C100_InitStruct)
   	C100_USART_Init(USARTx, C100_InitStruct->C100_BaudRate);
 
   	USART_SendCommand(USARTx, C100_InitStruct->C100_BaudRate);
-  	USART_SendCommand(USARTx, C100_InitStruct->C100_MessageType);
-  	USART_SendCommand(USARTx, C100_InitStruct->C100_MessageRate);
+  	/* USART_SendCommand(USARTx, C100_InitStruct->C100_MessageType); */
+  	/* USART_SendCommand(USARTx, C100_InitStruct->C100_MessageRate); */
 }
 
 /**
@@ -124,7 +124,7 @@ uint16_t C100_ReadHeading(USART_TypeDef* USARTx, MessageType type)
 	char atoi_buffer[3];
   char hdg_start;
 
-  // The function does not support the XY message type yet
+  /* The function does not support the XY message type yet */
   switch(type)
   {
     case(MessageType.NMEA):
@@ -138,7 +138,7 @@ uint16_t C100_ReadHeading(USART_TypeDef* USARTx, MessageType type)
       break;
   }
 	
-	// Locate the index of heading start
+	/* Locate the index of heading start */
 	for(idx = 0; idx < strlen(hdg_buffer); idx++)
 	{
 		if(hdg_buffer[idx] == C100_KVH_HEADING_START)
@@ -148,9 +148,9 @@ uint16_t C100_ReadHeading(USART_TypeDef* USARTx, MessageType type)
 		}
 	}
 
-	// Put the ASCII heading in a buffer
-	// We only use the most significant digits here,
-	// the decimal is discarded.
+	/* Put the ASCII heading in a buffer
+	   We only use the most significant digits here,
+	   the decimal is discarded. */
 	for(idx = 0; idx < 3; idx++)
 	{
 		atoi_buffer[idx] = rec_buffer[idx + hdg_idx];
@@ -191,7 +191,7 @@ char* C100_ReadMessage(USART_TypeDef* USARTx)
 	static uint8_t idx = 0;
 	char rec_buffer[20];
 
-	// Read ASCII message from C100 compass
+	/* Read ASCII message from C100 compass */
 	while(!done)
 	{
 		ascii_data = USART_ReadChar(USARTx);

@@ -43,7 +43,9 @@
 /* ---------------------------------------------------------------------------*/
 
 /* C100 actions --------------------------------------------------------------*/
-#define C100_ACTION_ZAP           "zap\r"
+#define C100_ACTION_ZAP           "zap\r" /* Warm boot (Resets the C100) */
+#define C100_ACTION_START         "s\r"   /* Start serial port output */
+#define C100_ACTION_HALT          "h\r"   /* Halt serial port output */
 /* ---------------------------------------------------------------------------*/
 
 /* C100 response commands ----------------------------------------------------*/
