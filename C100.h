@@ -50,6 +50,7 @@
 
 /* C100 response commands ----------------------------------------------------*/
 #define C100_SUCCESS_RESPONSE	    '>'
+#define C100_FAIL_RESPONSE        '!'
 #define C100_NMEA_HEADING_START   ',' 
 #define C100_KVH_HEADING_START		'$'
 #define CARRIAGE_RETURN			      0x0d
